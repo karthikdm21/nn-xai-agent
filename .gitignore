@@ -1,0 +1,10 @@
+.env
+xai-env/
+__pycache__/
+*.pyc
+.DS_Store
+data/
+mlruns/
+*.pth
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
