@@ -183,17 +183,12 @@ def build_interpretation(cam_np):
 
 
 def build_overlay_plot(image_tensor, cam_np, pred_class):
-    """
-    Overlay the Grad-CAM heatmap on the original image and encode as base64.
-    """
-    orig = image_tensor[0].permute(1, 2, 0).cpu().numpy()
+    orig = image_tensor[0].permute(1, 2, 0).cpu().detach().numpy()
     orig = (orig * 0.5 + 0.5).clip(0, 1)
 
-    heatmap = cm.jet(cam_np)[:, :, :3]  # drop alpha channel
+    heatmap = cm.jet(cam_np)[:, :, :3]
 
-    # blend original image and heatmap
-    overlay = 0.55 * orig + 0.45 * heatmap
-    overlay = overlay.clip(0, 1)
+    overlay = (0.55 * orig + 0.45 * heatmap).clip(0, 1)
 
     fig, axes = plt.subplots(1, 3, figsize=(12, 4))
 
