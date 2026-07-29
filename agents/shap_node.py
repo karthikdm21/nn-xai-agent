@@ -34,7 +34,7 @@ def get_background():
         img = Image.open(f).convert("RGB")
         tensors.append(transform(img))
 
-    _background = torch.stack(tensors)
+    _background = torch.stack(tensors).detach()
     print(f"  [SHAP node] background loaded: {_background.shape}")
     return _background
 

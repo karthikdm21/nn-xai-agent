@@ -57,15 +57,22 @@ def explain_shap(
     try:
         # Move to CPU for SHAP — more stable
         model_cpu = model.cpu()
-        image_cpu = image_tensor.cpu()
-        bg_cpu    = background_tensors.cpu()
+        image_cpu = image_tensor.detach().cpu()
+        bg_cpu = background_tensors.detach().cpu()
 
         # Create explainer
         explainer  = shap.GradientExplainer(model_cpu, bg_cpu)
 
         # Compute SHAP values — returns list of arrays, one per output class
         shap_values = explainer.shap_values(image_cpu)
+        if torch.is_tensor(shap_values):
+            shap_values = shap_values.detach().cpu().numpy()
 
+        elif isinstance(shap_values, list):
+            shap_values = [
+                s.detach().cpu().numpy() if torch.is_tensor(s) else s
+                for s in shap_values
+            ]
         # Get SHAP values for the predicted class only
         # shap_values shape: [num_classes, batch, channels, H, W]
         shap_for_class = shap_values[pred_class]  # [1, 3, 64, 64]
@@ -85,7 +92,7 @@ def explain_shap(
         fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
         # Original image
-        orig = image_tensor[0].permute(1, 2, 0).cpu().numpy()
+        orig = image_tensor[0].detach().permute(1, 2, 0).cpu().numpy()
         orig = (orig * 0.5 + 0.5).clip(0, 1)
         axes[0].imshow(orig)
         axes[0].set_title("Original image")
