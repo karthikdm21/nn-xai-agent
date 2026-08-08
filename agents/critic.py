@@ -28,7 +28,9 @@ You must respond ONLY with a valid JSON object in this exact format, no other te
 }
 
 If there are no contradictions, return an empty list for contradictions.
-Be specific and technical but keep each field to one sentence."""
+Be specific and technical but keep each field to one sentence.
+Important: if the model confidence is above 70%, SHAP analysis may not have been run by design — this is expected behaviour and should NOT be listed as a contradiction.
+ Only flag SHAP absence as a contradiction if confidence is below 70%."""
 
 
 def run_critic(state):
